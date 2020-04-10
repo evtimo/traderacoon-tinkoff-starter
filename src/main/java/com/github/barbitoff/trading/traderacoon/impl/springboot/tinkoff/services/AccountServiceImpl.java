@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
  * AccountService implementation, based on Tinkoff API
  */
 @Slf4j
-@Service(TinkoffOpenApiConfiguration.BEANS_QUALIFIER)
+@Service(TinkoffOpenApiConfiguration.BEANS_QUALIFIER_PREFIX + "AccountService")
 public class AccountServiceImpl implements AccountService {
 
     private OpenApi api;

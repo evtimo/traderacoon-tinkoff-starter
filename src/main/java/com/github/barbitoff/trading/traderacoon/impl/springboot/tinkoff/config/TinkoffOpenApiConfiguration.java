@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import ru.tinkoff.invest.openapi.OpenApi;
+import ru.tinkoff.invest.openapi.OpenApiFactoryBase;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
 import ru.tinkoff.invest.openapi.okhttp.OkHttpOpenApiFactory;
 
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
 @Slf4j
 public class TinkoffOpenApiConfiguration {
 
-    public static final String BEANS_QUALIFIER = "Tinkoff";
+    public static final String BEANS_QUALIFIER_PREFIX = "Tinkoff";
 
     private TinkoffOpenApiProperties props;
 
@@ -30,7 +31,7 @@ public class TinkoffOpenApiConfiguration {
     public OpenApi getOpenApi() {
         log.debug("Initializing Tinkoff API");
         OpenApi api;
-        var factory = new OkHttpOpenApiFactory(props.getApiToken(), Logger.getLogger(getClass().getCanonicalName()));
+        var factory = getOpenApiFactory();
         if (props.getSandbox().isEnabled()) {
             log.debug("Using SANDBOX mode");
             api = factory.createSandboxOpenApiClient(Executors.newSingleThreadExecutor());
@@ -41,5 +42,13 @@ public class TinkoffOpenApiConfiguration {
         }
         log.debug("Initialization finished");
         return api;
+    }
+
+    @Bean
+    public OpenApiFactoryBase getOpenApiFactory() {
+        return new OkHttpOpenApiFactory(
+                props.getApiToken(),
+                Logger.getLogger(getClass().getCanonicalName())
+        );
     }
 }

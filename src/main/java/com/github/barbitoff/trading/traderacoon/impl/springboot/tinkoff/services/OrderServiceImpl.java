@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 @AllArgsConstructor
 @Slf4j
-@Service(TinkoffOpenApiConfiguration.BEANS_QUALIFIER)
+@Service(TinkoffOpenApiConfiguration.BEANS_QUALIFIER_PREFIX + "OrderService")
 public class OrderServiceImpl implements OrderService {
     private final OpenApi api;
     private final AccountService accountService;
@@ -63,7 +63,7 @@ public class OrderServiceImpl implements OrderService {
                 if (order.getStatus() != OrderStatus.New && order.getStatus() != OrderStatus.PendingNew
                         && order.getStatus() != OrderStatus.PartiallyFill) {
                     // TODO: make audit here
-                    log.info("Order {} has status {}, can't cancel", order.getId(), order.getStatus());
+                    log.debug("Order {} has status {}, can't cancel", order.getId(), order.getStatus());
                 } else {
                     // TODO: make audit here
                     CompletableFuture<Void> future = api.getOrdersContext().cancelOrder(
@@ -80,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order buy(String figi, int lots, BigDecimal price) throws TradingApiException, OrderRejectedException, AccountNotFoundException {
-        log.info("Buying {}, {} lots, with price {}", figi, lots, price);
+        log.debug("Buying {}, {} lots, with price {}", figi, lots, price);
         return orderMapper.mapTinkoffOrder(
                 placeOrder(figi, lots, price, Operation.Buy),
                 figi,
@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order sell(String figi, int lots, BigDecimal price) throws TradingApiException, OrderRejectedException, AccountNotFoundException {
-        log.info("Selling {}, {} lots, with price {}", figi, lots, price);
+        log.debug("Selling {}, {} lots, with price {}", figi, lots, price);
         return orderMapper.mapTinkoffOrder(
                 placeOrder(figi, lots, price, Operation.Sell),
                 figi,
@@ -131,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderRejectedException(placedOrder.rejectReason);
         }
         // TODO: make audit here, collect metrics (on commission and cash flow)
-        log.info("The order is placed");
+        log.debug("The order is placed");
         return placedOrder;
     }
 }

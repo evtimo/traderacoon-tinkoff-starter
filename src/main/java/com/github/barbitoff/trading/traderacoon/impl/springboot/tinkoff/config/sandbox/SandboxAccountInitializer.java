@@ -1,8 +1,9 @@
-package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config;
+package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config.sandbox;
 
 import com.github.barbitoff.trading.traderacoon.api.model.exception.AccountNotFoundException;
 import com.github.barbitoff.trading.traderacoon.api.model.exception.TradingApiException;
 import com.github.barbitoff.trading.traderacoon.api.service.AccountService;
+import com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config.TinkoffOpenApiProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -32,7 +33,7 @@ public class SandboxAccountInitializer implements InitializingBean {
     public void afterPropertiesSet() {
         if(props.getSandbox().isEnabled()
                 && props.getSandbox().getInitRubs() != null) {
-            log.info("Initializing sandbox with initial RUB value");
+            log.debug("Initializing sandbox with initial RUB value");
             try {
                 ((SandboxOpenApi) api).getSandboxContext().setCurrencyBalance(
                         new CurrencyBalance(Currency.RUB,
@@ -43,7 +44,7 @@ public class SandboxAccountInitializer implements InitializingBean {
             } catch (AccountNotFoundException | TradingApiException ex) {
                 throw new RuntimeException("Account not found while trying to initialize Sandbox", ex);
             }
-            log.info("Sandbox account initialized with initial RUB value");
+            log.debug("Sandbox account initialized with initial RUB value");
         }
     }
 }

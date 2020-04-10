@@ -1,18 +1,20 @@
-package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config;
+package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config.sandbox;
 
 import com.github.barbitoff.trading.traderacoon.api.model.TradingAccount;
 import com.github.barbitoff.trading.traderacoon.api.model.exception.AccountNotFoundException;
 import com.github.barbitoff.trading.traderacoon.api.model.exception.TradingApiException;
 import com.github.barbitoff.trading.traderacoon.api.service.AccountService;
+import com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config.TinkoffOpenApiProperties;
+import com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config.sandbox.SandboxAccountInitializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 
 import static org.mockito.Mockito.*;
 
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.tinkoff.invest.openapi.SandboxContext;
 import ru.tinkoff.invest.openapi.SandboxOpenApi;
