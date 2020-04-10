@@ -4,6 +4,7 @@ import com.github.barbitoff.trading.traderacoon.api.model.TradingAccount;
 import com.github.barbitoff.trading.traderacoon.api.model.exception.AccountNotFoundException;
 import com.github.barbitoff.trading.traderacoon.api.model.exception.TradingApiException;
 import com.github.barbitoff.trading.traderacoon.api.service.AccountService;
+import com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config.TinkoffOpenApiProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -53,7 +54,7 @@ class AccountServiceImplTest {
     @Test
     void getTradingAccountWhenSandbox() throws AccountNotFoundException, TradingApiException {
         configureSuccessfullResponse();
-        accountsService = new AccountServiceImpl(api, true, false);
+        accountsService = new AccountServiceImpl(api, getProperties(true, false));
         TradingAccount tradingAccount = accountsService.getTradingAccount();
         // any account is ok when using sandbox
         assertTrue(tradingAccount.getId().equals(iisAcc.brokerAccountId) || tradingAccount.getId().equals(nonIisAcc.brokerAccountId));
@@ -62,7 +63,7 @@ class AccountServiceImplTest {
     @Test
     void getTradingAccountWhenUsingIis() throws AccountNotFoundException, TradingApiException {
         configureSuccessfullResponse();
-        accountsService = new AccountServiceImpl(api, false, true);
+        accountsService = new AccountServiceImpl(api, getProperties(false, true));
         TradingAccount tradingAccount = accountsService.getTradingAccount();
         assertEquals(tradingAccount.getId(), iisAcc.brokerAccountId);
     }
@@ -70,7 +71,7 @@ class AccountServiceImplTest {
     @Test
     void getTradingAccountWhenNotUsingIis() throws AccountNotFoundException, TradingApiException {
         configureSuccessfullResponse();
-        accountsService = new AccountServiceImpl(api, false, false);
+        accountsService = new AccountServiceImpl(api, getProperties(false, false));
         TradingAccount tradingAccount = accountsService.getTradingAccount();
         assertEquals(tradingAccount.getId(), nonIisAcc.brokerAccountId);
     }
@@ -78,7 +79,7 @@ class AccountServiceImplTest {
     @Test
     void getTradingAccountWithCaching() throws AccountNotFoundException, TradingApiException {
         configureSuccessfullResponse();
-        accountsService = new AccountServiceImpl(api, false, false);
+        accountsService = new AccountServiceImpl(api, getProperties(false, false));
         accountsService.getTradingAccount();
         accountsService.getTradingAccount();
         InOrder inOrder = inOrder(userCtx); // is needed for calls() verification
@@ -101,7 +102,7 @@ class AccountServiceImplTest {
         CompletableFuture<AccountsList> future = CompletableFuture.failedFuture(apiException);
         when(userCtx.getAccounts()).thenReturn(future);
 
-        accountsService = new AccountServiceImpl(api, isSandbox, useIisAccount);
+        accountsService = new AccountServiceImpl(api, getProperties(isSandbox, useIisAccount));
         TradingApiException factEx = assertThrows(TradingApiException.class,
                 () -> accountsService.getTradingAccount(),
                 "Expected exception when api throws exception"
@@ -115,10 +116,19 @@ class AccountServiceImplTest {
         CompletableFuture<AccountsList> future = CompletableFuture.completedFuture(new AccountsList(Collections.emptyList()));
         when(userCtx.getAccounts()).thenReturn(future);
 
-        accountsService = new AccountServiceImpl(api, isSandbox, useIisAccount);
+        accountsService = new AccountServiceImpl(api, getProperties(isSandbox, useIisAccount));
         assertThrows(AccountNotFoundException.class,
                 () -> accountsService.getTradingAccount(),
                 "Expected exception when api returns no account"
         );
+    }
+
+    private TinkoffOpenApiProperties getProperties(boolean isSandbox, boolean useIis) {
+        TinkoffOpenApiProperties.Sandbox sandbox = new TinkoffOpenApiProperties.Sandbox();
+        sandbox.setEnabled(isSandbox);
+        TinkoffOpenApiProperties props = new TinkoffOpenApiProperties();
+        props.setSandbox(sandbox);
+        props.setUseIisAccount(useIis);
+        return props;
     }
 }
