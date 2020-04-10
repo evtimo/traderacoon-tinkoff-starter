@@ -5,6 +5,7 @@ import com.github.barbitoff.trading.traderacoon.api.model.exception.AccountNotFo
 import com.github.barbitoff.trading.traderacoon.api.model.exception.TradingApiException;
 import com.github.barbitoff.trading.traderacoon.api.service.AccountService;
 import com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config.TinkoffOpenApiConfiguration;
+import com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.config.TinkoffOpenApiProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.tinkoff.invest.openapi.OpenApi;
@@ -26,10 +27,10 @@ public class AccountServiceImpl implements AccountService {
     private boolean useIisAccount;
     private volatile TradingAccount tradingAccount;
 
-    public AccountServiceImpl(OpenApi api, boolean sandbox, boolean useIisAccount) {
+    public AccountServiceImpl(OpenApi api, TinkoffOpenApiProperties props) {
         this.api = api;
-        this.sandbox = sandbox;
-        this.useIisAccount = useIisAccount;
+        this.sandbox = props.getSandbox().isEnabled();
+        this.useIisAccount = props.isUseIisAccount();
     }
 
     /**
