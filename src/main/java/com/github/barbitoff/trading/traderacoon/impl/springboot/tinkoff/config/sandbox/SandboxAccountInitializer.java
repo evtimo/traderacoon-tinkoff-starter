@@ -15,6 +15,11 @@ import ru.tinkoff.invest.openapi.models.sandbox.CurrencyBalance;
 
 import java.math.BigDecimal;
 
+/**
+ * Initializes sandbox account with some starting RUB value according to
+ * the application configuration
+ * @see TinkoffOpenApiProperties
+ */
 @Slf4j
 @Component
 public class SandboxAccountInitializer implements InitializingBean {
@@ -33,7 +38,7 @@ public class SandboxAccountInitializer implements InitializingBean {
     public void afterPropertiesSet() {
         if(props.getSandbox().isEnabled()
                 && props.getSandbox().getInitRubs() != null) {
-            log.debug("Initializing sandbox with initial RUB value");
+            log.info("Initializing sandbox with initial RUB value");
             try {
                 ((SandboxOpenApi) api).getSandboxContext().setCurrencyBalance(
                         new CurrencyBalance(Currency.RUB,
@@ -44,7 +49,7 @@ public class SandboxAccountInitializer implements InitializingBean {
             } catch (AccountNotFoundException | TradingApiException ex) {
                 throw new RuntimeException("Account not found while trying to initialize Sandbox", ex);
             }
-            log.debug("Sandbox account initialized with initial RUB value");
+            log.info("Sandbox account initialized with initial RUB value");
         }
     }
 }

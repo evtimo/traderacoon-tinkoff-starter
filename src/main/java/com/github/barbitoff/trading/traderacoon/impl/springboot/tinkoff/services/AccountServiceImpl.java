@@ -16,7 +16,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 /**
- * AccountService implementation, based on Tinkoff API
+ * AccountService implementation, based on Tinkoff API. Returns IIS account
+ * or regular account depending on the configuration. In sandbox mode,
+ * returns first account regardless of the "useIisAccount" flag
  */
 @Slf4j
 @Service(TinkoffOpenApiConfiguration.BEANS_QUALIFIER_PREFIX + "AccountService")
