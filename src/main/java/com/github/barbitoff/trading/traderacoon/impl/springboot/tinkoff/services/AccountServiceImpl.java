@@ -44,7 +44,7 @@ public class AccountServiceImpl implements AccountService {
      * @throws AccountNotFoundException if account can't be found
      */
     protected void retrieveTradingAccount() throws TradingApiException, AccountNotFoundException {
-        log.debug("Preparing account information");
+        log.info("Preparing account information");
         CompletableFuture<AccountsList> accountsCf = api.getUserContext().getAccounts();
         AccountsList accountsList;
         try {
@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         if (accountsList != null && accountsList.accounts.size() > 0) {
-            log.debug("Got " + accountsList.accounts.size() + " accounts");
+            log.info("Got " + accountsList.accounts.size() + " accounts");
             this.tradingAccount = accountsList.accounts.stream()
                     .filter(acc ->
                             sandbox ||

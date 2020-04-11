@@ -36,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> getActiveOrders() throws AccountNotFoundException, TradingApiException {
-        log.debug("Getting orders list");
+        log.info("Getting orders list");
         try {
             List<ru.tinkoff.invest.openapi.models.orders.Order> orders = api.getOrdersContext()
                     .getOrders(accountService.getTradingAccount().getId())
@@ -44,7 +44,7 @@ public class OrderServiceImpl implements OrderService {
             if (orders == null) {
                 orders = Collections.emptyList();
             }
-            log.debug("Got {} orders", orders.size());
+            log.info("Got {} orders", orders.size());
             return orders.stream()
                     .map(orderMapper::mapTinkoffOrder)
                     .collect(Collectors.toList());
@@ -55,22 +55,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void cancelOrders(List<Order> orders) throws AccountNotFoundException, TradingApiException {
-        log.debug("Cancelling {} orders", orders.size());
+        log.info("Cancelling {} orders", orders.size());
         String accountId = accountService.getTradingAccount().getId();
         try {
             for (Order order : orders) {
-                log.debug("Cancelling order {}", order.getId());
+                log.info("Cancelling order {}", order.getId());
                 if (order.getStatus() != OrderStatus.New && order.getStatus() != OrderStatus.PendingNew
                         && order.getStatus() != OrderStatus.PartiallyFill) {
                     // TODO: make audit here
-                    log.debug("Order {} has status {}, can't cancel", order.getId(), order.getStatus());
+                    log.info("Order {} has status {}, can't cancel", order.getId(), order.getStatus());
                 } else {
                     // TODO: make audit here
                     CompletableFuture<Void> future = api.getOrdersContext().cancelOrder(
                             order.getId(),
                             accountId);
                     future.get();
-                    log.debug("Cancelled order {}", order.getId());
+                    log.info("Cancelled order {}", order.getId());
                 }
             }
         } catch (InterruptedException | ExecutionException ex) {
@@ -80,7 +80,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order buy(String figi, int lots, BigDecimal price) throws TradingApiException, OrderRejectedException, AccountNotFoundException {
-        log.debug("Buying {}, {} lots, with price {}", figi, lots, price);
+        log.info("Buying {}, {} lots, with price {}", figi, lots, price);
         return orderMapper.mapTinkoffOrder(
                 placeOrder(figi, lots, price, Operation.Buy),
                 figi,
@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order sell(String figi, int lots, BigDecimal price) throws TradingApiException, OrderRejectedException, AccountNotFoundException {
-        log.debug("Selling {}, {} lots, with price {}", figi, lots, price);
+        log.info("Selling {}, {} lots, with price {}", figi, lots, price);
         return orderMapper.mapTinkoffOrder(
                 placeOrder(figi, lots, price, Operation.Sell),
                 figi,
@@ -131,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderRejectedException(placedOrder.rejectReason);
         }
         // TODO: make audit here, collect metrics (on commission and cash flow)
-        log.debug("The order is placed");
+        log.info("The order is placed");
         return placedOrder;
     }
 }
