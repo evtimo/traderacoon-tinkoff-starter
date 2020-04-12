@@ -32,7 +32,11 @@ public class TinkoffOpenApiProperties {
          */
         private boolean enabled;
         /**
-         * If set, sandbox account gets initialized on start with the specified
+         * Clear sandbox portfolio on start up
+         */
+        private boolean clearOnStartup;
+        /**
+         * If set, sandbox account gets initialized on start up with the specified
          * value (in RUB currency)
          */
         private Integer initRubs;

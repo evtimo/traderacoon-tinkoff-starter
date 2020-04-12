@@ -86,6 +86,19 @@ class SandboxAccountInitializerTest {
     }
 
     @Test
+    public void testClearOnStartup() throws TradingApiException, AccountNotFoundException {
+        TinkoffOpenApiProperties.Sandbox sandbox = new TinkoffOpenApiProperties.Sandbox();
+        sandbox.setEnabled(true);
+        sandbox.setClearOnStartup(true);
+        props.setSandbox(sandbox);
+        initSuccessfulAccountService();
+
+        initializer.afterPropertiesSet();
+
+        verify(sandboxContext).clearAll(eq(ACCOUNT_ID));
+    }
+
+    @Test
     public void testAccountNotFoundException() throws TradingApiException, AccountNotFoundException {
         Exception exceptionExpected = new AccountNotFoundException();
         testExceptionWhileGettingAccount(exceptionExpected);

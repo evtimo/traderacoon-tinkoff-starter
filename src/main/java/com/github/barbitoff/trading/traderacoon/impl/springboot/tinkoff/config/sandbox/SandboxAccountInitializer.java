@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 /**
  * Initializes sandbox account with some starting RUB value according to
  * the application configuration
+ *
  * @see TinkoffOpenApiProperties
  */
 @Slf4j
@@ -36,20 +37,30 @@ public class SandboxAccountInitializer implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        if(props.getSandbox().isEnabled()
-                && props.getSandbox().getInitRubs() != null) {
-            log.info("Initializing sandbox with initial RUB value");
+        if (props.getSandbox().isEnabled()) {
             try {
-                ((SandboxOpenApi) api).getSandboxContext().setCurrencyBalance(
-                        new CurrencyBalance(Currency.RUB,
-                                BigDecimal.valueOf(props.getSandbox().getInitRubs())
-                        ),
-                        accountService.getTradingAccount().getId()
-                );
+                // process clearOnStartup flag
+                if (props.getSandbox().isClearOnStartup()) {
+                    log.info("Claering sandbox portfolio");
+                    ((SandboxOpenApi) api).getSandboxContext().clearAll(
+                            accountService.getTradingAccount().getId()
+                    );
+                    log.info("Portfolio cleared");
+                }
+                // process initRubs
+                if (props.getSandbox().getInitRubs() != null) {
+                    log.info("Initializing sandbox with initial RUB value");
+                    ((SandboxOpenApi) api).getSandboxContext().setCurrencyBalance(
+                            new CurrencyBalance(Currency.RUB,
+                                    BigDecimal.valueOf(props.getSandbox().getInitRubs())
+                            ),
+                            accountService.getTradingAccount().getId()
+                    );
+                    log.info("Sandbox account initialized with initial RUB value");
+                }
             } catch (AccountNotFoundException | TradingApiException ex) {
                 throw new RuntimeException("Account not found while trying to initialize Sandbox", ex);
             }
-            log.info("Sandbox account initialized with initial RUB value");
         }
     }
 }
