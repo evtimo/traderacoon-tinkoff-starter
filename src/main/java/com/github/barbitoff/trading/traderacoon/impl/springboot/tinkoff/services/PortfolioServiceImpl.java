@@ -1,9 +1,6 @@
 package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.services;
 
-import com.github.barbitoff.trading.traderacoon.api.model.CurrencyPortfolioPosition;
-import com.github.barbitoff.trading.traderacoon.api.model.InstrumentType;
-import com.github.barbitoff.trading.traderacoon.api.model.Portfolio;
-import com.github.barbitoff.trading.traderacoon.api.model.PortfolioPosition;
+import com.github.barbitoff.trading.traderacoon.api.model.*;
 import com.github.barbitoff.trading.traderacoon.api.model.exception.AccountNotFoundException;
 import com.github.barbitoff.trading.traderacoon.api.model.exception.TradingApiException;
 import com.github.barbitoff.trading.traderacoon.api.service.AccountService;
@@ -46,7 +43,7 @@ public class PortfolioServiceImpl implements PortfolioService {
     }
 
     /**
-     * Gets currencies and converts into the target models
+     * Gets currencies and converts them into the target models
      *
      * @return currencies
      * @throws TradingApiException      if Tinkoff API throws an exception
@@ -60,7 +57,6 @@ public class PortfolioServiceImpl implements PortfolioService {
             ).get().currencies.stream().map(src -> {
                 CurrencyPortfolioPosition dest = new CurrencyPortfolioPosition();
                 dest.setCurrency(Currency.getInstance(src.currency.name()));
-                dest.setType(InstrumentType.Currency);
                 dest.setBalance(src.balance);
                 dest.setBlocked(src.blocked);
                 return dest;
@@ -70,8 +66,29 @@ public class PortfolioServiceImpl implements PortfolioService {
         }
     }
 
+    /**
+     * Gets non-currency portfolio positions and converts them into the target models
+     *
+     * @return non-currency portfolio positions
+     * @throws TradingApiException      if Tinkoff API throws an exception
+     * @throws AccountNotFoundException if account service can't get an account
+     */
     @Override
     public List<PortfolioPosition> getNonCurrencies() throws TradingApiException, AccountNotFoundException {
-        return null; // TODO: implement
+        try {
+            return api.getPortfolioContext().getPortfolio(
+                    accountService.getTradingAccount().getId()
+            ).get().positions.stream().map(src -> {
+                NonCurrencyPortfolioPosition dest = new NonCurrencyPortfolioPosition();
+                dest.setType(InstrumentType.valueOf(src.instrumentType.name()));
+                dest.setBalance(src.balance);
+                dest.setBlocked(src.blocked);
+                dest.setFigi(src.figi);
+                dest.setLots(src.lots);
+                return dest;
+            }).collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException ex) {
+            throw new TradingApiException("Error getting portfolio positions", ex);
+        }
     }
 }
