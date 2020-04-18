@@ -28,15 +28,13 @@ public class InstrumentServiceImpl implements InstrumentService {
         try {
             final Optional<ru.tinkoff.invest.openapi.models.market.Instrument> instrument = api
                     .getMarketContext().searchMarketInstrumentByFigi(figi).get();
-            return instrument.map(src -> {
-                Instrument dest = new Instrument();
-                dest.setFigi(src.figi);
-                dest.setCurrency(src.currency == null ? null : Currency.getInstance(src.currency.name()));
-                dest.setLotSize(src.lot);
-                dest.setMinPriceIncrement(src.minPriceIncrement);
-                dest.setType(InstrumentType.valueOf(src.type.name()));
-                return dest;
-            });
+            return instrument.map(src -> Instrument.builder()
+                    .figi(src.figi)
+                    .currency(src.currency == null ? null : Currency.getInstance(src.currency.name()))
+                    .lotSize(src.lot)
+                    .minPriceIncrement(src.minPriceIncrement)
+                    .type(InstrumentType.valueOf(src.type.name()))
+                    .build());
         } catch (InterruptedException | ExecutionException ex) {
             throw new TradingApiException("Error getting information about an instrument", ex);
         }

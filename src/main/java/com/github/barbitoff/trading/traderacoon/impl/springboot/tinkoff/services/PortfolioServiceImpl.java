@@ -54,13 +54,11 @@ public class PortfolioServiceImpl implements PortfolioService {
         try {
             return api.getPortfolioContext().getPortfolioCurrencies(
                     accountService.getTradingAccount().getId()
-            ).get().currencies.stream().map(src -> {
-                CurrencyPortfolioPosition dest = new CurrencyPortfolioPosition();
-                dest.setCurrency(Currency.getInstance(src.currency.name()));
-                dest.setBalance(src.balance);
-                dest.setBlocked(src.blocked);
-                return dest;
-            }).collect(Collectors.toList());
+            ).get().currencies.stream().map(src -> CurrencyPortfolioPosition.builder()
+                    .balance(src.balance)
+                    .blocked(src.blocked)
+                    .currency(Currency.getInstance(src.currency.name()))
+                    .build()).collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
             throw new TradingApiException("Error getting portfolio currencies", ex);
         }
@@ -78,15 +76,14 @@ public class PortfolioServiceImpl implements PortfolioService {
         try {
             return api.getPortfolioContext().getPortfolio(
                     accountService.getTradingAccount().getId()
-            ).get().positions.stream().map(src -> {
-                NonCurrencyPortfolioPosition dest = new NonCurrencyPortfolioPosition();
-                dest.setType(InstrumentType.valueOf(src.instrumentType.name()));
-                dest.setBalance(src.balance);
-                dest.setBlocked(src.blocked);
-                dest.setFigi(src.figi);
-                dest.setLots(src.lots);
-                return dest;
-            }).collect(Collectors.toList());
+            ).get().positions.stream().map(src -> NonCurrencyPortfolioPosition.builder()
+                    .type(InstrumentType.valueOf(src.instrumentType.name()))
+                    .balance(src.balance)
+                    .blocked(src.blocked)
+                    .figi(src.figi)
+                    .lots(src.lots)
+                    .build()
+            ).collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException ex) {
             throw new TradingApiException("Error getting portfolio positions", ex);
         }

@@ -223,11 +223,9 @@ class OrderServiceImplTest {
         when(ordersCtx.getOrders(eq(ACCOUNT_ID))).thenReturn(future);
 
         // configure mapper to return orders with the corresponding id and status
-        orders.forEach(order -> {
-            when(orderMapper.mapTinkoffOrder(order)).thenReturn(
-                    createOrderWithIdAndStatus(order.id, OrderStatus.valueOf(order.status.name()))
-            );
-        });
+        orders.forEach(order -> when(orderMapper.mapTinkoffOrder(order)).thenReturn(
+                createOrderWithIdAndStatus(order.id, OrderStatus.valueOf(order.status.name()))
+        ));
 
         // call method under test
         ordersService.cancelAllOrders();
@@ -427,16 +425,17 @@ class OrderServiceImplTest {
      */
     private static List<Order> createOrdersOfAllTypes() {
         return Arrays.stream(OrderStatus.values())
-                .map(s -> new Order(
-                        ORDER_ID + s.name(),
-                        "FIGI_1" + s.name(),
-                        StockOperation.Buy,
-                        s,
-                        1,
-                        0,
-                        StockOrderType.Market,
-                        BigDecimal.ZERO
-                )).collect(Collectors.toList());
+                .map(s -> Order.builder()
+                        .id(ORDER_ID + s.name())
+                        .figi("FIGI_1" + s.name())
+                        .operation(StockOperation.Buy)
+                        .status(s)
+                        .lotsFilled(0)
+                        .lotsRequested(1)
+                        .type(StockOrderType.Market)
+                        .price(BigDecimal.ZERO)
+                        .build()
+                ).collect(Collectors.toList());
     }
 
     private static List<ru.tinkoff.invest.openapi.models.orders.Order> createTinkoffOrdersOfAllTypes() {
@@ -454,29 +453,29 @@ class OrderServiceImplTest {
     }
 
     private static Order createNewOrder() {
-        return new Order(
-                ORDER_ID,
-                "FIGI_1",
-                StockOperation.Buy,
-                OrderStatus.New,
-                1,
-                0,
-                StockOrderType.Market,
-                BigDecimal.ZERO
-        );
+        return Order.builder()
+                .id(ORDER_ID)
+                .figi("FIGI_1")
+                .operation(StockOperation.Buy)
+                .status(OrderStatus.New)
+                .lotsFilled(0)
+                .lotsRequested(1)
+                .type(StockOrderType.Market)
+                .price(BigDecimal.ZERO)
+                .build();
     }
 
     private static Order createOrderWithIdAndStatus(String id, OrderStatus status) {
-        return new Order(
-                id,
-                "FIGI_1",
-                StockOperation.Buy,
-                status,
-                1,
-                0,
-                StockOrderType.Market,
-                BigDecimal.ZERO
-        );
+        return Order.builder()
+                .id(id)
+                .figi("FIGI_1")
+                .operation(StockOperation.Buy)
+                .status(status)
+                .lotsFilled(0)
+                .lotsRequested(1)
+                .type(StockOrderType.Market)
+                .price(BigDecimal.ZERO)
+                .build();
     }
 
     private static ru.tinkoff.invest.openapi.models.orders.Order createNewTinkoffOrder() {

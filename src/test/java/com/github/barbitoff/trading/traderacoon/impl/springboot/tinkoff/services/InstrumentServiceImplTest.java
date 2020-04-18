@@ -3,6 +3,8 @@ package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.service
 import com.github.barbitoff.trading.traderacoon.api.model.exception.TradingApiException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.tinkoff.invest.openapi.MarketContext;
@@ -39,15 +41,16 @@ class InstrumentServiceImplTest {
         instrumentService = new InstrumentServiceImpl(api);
     }
 
-    @Test
-    void getInstrument() throws TradingApiException {
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void getInstrument(boolean useNullCurrency) throws TradingApiException {
         Instrument src = new Instrument(
                 FIGI,
                 "ticker1",
                 "isin1",
                 BigDecimal.TEN,
                 11,
-                Currency.RUB,
+                useNullCurrency ? null : Currency.RUB,
                 "name1",
                 InstrumentType.Bond
         );
@@ -60,7 +63,11 @@ class InstrumentServiceImplTest {
         assertEquals(BigDecimal.TEN, dest.get().getMinPriceIncrement());
         assertEquals(11, dest.get().getLotSize());
         assertEquals(com.github.barbitoff.trading.traderacoon.api.model.InstrumentType.Bond, dest.get().getType());
-        assertEquals(java.util.Currency.getInstance("RUB"), dest.get().getCurrency());
+        if(useNullCurrency) {
+            assertNull(dest.get().getCurrency());
+        } else {
+            assertEquals(java.util.Currency.getInstance("RUB"), dest.get().getCurrency());
+        }
     }
 
     @Test
