@@ -49,6 +49,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params"
     testImplementation 'org.jeasy:easy-random-core:4.2.0'
     testImplementation "org.mockito:mockito-core:3.3.3"
+    testImplementation "org.answer-it:mock-slf4j:1.0.0"
 }
 
 dependencyManagement {
