@@ -1,6 +1,6 @@
 package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.services;
 
-import com.github.barbitoff.trading.traderacoon.api.model.events.TradingEvent;
+import com.github.barbitoff.trading.traderacoon.api.model.events.TradingAuditEvent;
 import com.github.barbitoff.trading.traderacoon.api.service.TradingAuditService;
 import org.answerit.mock.slf4j.MockSlf4j;
 import static org.answerit.mock.slf4j.MockSlf4jMatchers.*;
@@ -28,7 +28,7 @@ class LoggingTradingAuditServiceTest {
 
     @Test
     void fireEvent() {
-        TradingEvent evt = Mockito.mock(TradingEvent.class);
+        TradingAuditEvent evt = Mockito.mock(TradingAuditEvent.class);
         String str = "STR1";
         when(evt.toString()).thenReturn(str);
 

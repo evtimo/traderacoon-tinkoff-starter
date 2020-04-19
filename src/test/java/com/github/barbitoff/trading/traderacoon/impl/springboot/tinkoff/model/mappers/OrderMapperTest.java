@@ -1,10 +1,8 @@
 package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.model.mappers;
 
-import com.github.barbitoff.trading.traderacoon.api.model.StockOperation;
 import com.github.barbitoff.trading.traderacoon.api.model.StockOrderType;
 import org.jeasy.random.EasyRandom;
 import org.jeasy.random.EasyRandomParameters;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mapstruct.factory.Mappers;
@@ -62,6 +60,7 @@ class OrderMapperTest {
         assertEquals(src.price, target.getPrice());
         assertEquals(src.status.name(), target.getStatus().name());
         assertEquals(src.type.name(), target.getType().name());
+        assertNull(target.getCommission());
     }
 
     @ParameterizedTest
@@ -107,5 +106,7 @@ class OrderMapperTest {
         assertEquals(PRICE, target.getPrice());
         assertEquals(src.status.name(), target.getStatus().name());
         assertEquals(type.name(), target.getType().name());
+        assertEquals(src.commission.currency.name(), target.getCommission().getCurrency().getCurrencyCode());
+        assertEquals(src.commission.value, target.getCommission().getValue());
     }
 }

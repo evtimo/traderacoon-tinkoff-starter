@@ -62,10 +62,8 @@ public class OrderServiceImpl implements OrderService {
                 log.info("Cancelling order {}", order.getId());
                 if (order.getStatus() != OrderStatus.New && order.getStatus() != OrderStatus.PendingNew
                         && order.getStatus() != OrderStatus.PartiallyFill) {
-                    // TODO: make audit here
                     log.info("Order {} has status {}, can't cancel", order.getId(), order.getStatus());
                 } else {
-                    // TODO: make audit here
                     CompletableFuture<Void> future = api.getOrdersContext().cancelOrder(
                             order.getId(),
                             accountId);
@@ -112,7 +110,6 @@ public class OrderServiceImpl implements OrderService {
      */
     private PlacedOrder placeOrder(String figi, int lots, BigDecimal price, Operation operation)
             throws TradingApiException, OrderRejectedException, AccountNotFoundException {
-        // TODO: make audit here
         String accountId = accountService.getTradingAccount().getId();
         PlacedOrder placedOrder;
         try {
@@ -127,10 +124,8 @@ public class OrderServiceImpl implements OrderService {
             throw new TradingApiException("Error sending '" + operation.name() + "' order", ex);
         }
         if (placedOrder.status == Status.Rejected) {
-            // TODO: make audit here
             throw new OrderRejectedException(placedOrder.rejectReason);
         }
-        // TODO: make audit here, collect metrics (on commission and cash flow)
         log.info("The order is placed");
         return placedOrder;
     }

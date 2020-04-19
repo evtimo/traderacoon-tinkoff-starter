@@ -1,6 +1,6 @@
 package com.github.barbitoff.trading.traderacoon.impl.springboot.tinkoff.services;
 
-import com.github.barbitoff.trading.traderacoon.api.model.events.TradingEvent;
+import com.github.barbitoff.trading.traderacoon.api.model.events.TradingAuditEvent;
 import com.github.barbitoff.trading.traderacoon.api.service.TradingAuditService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -18,7 +18,7 @@ public class LoggingTradingAuditService implements TradingAuditService {
     public static final String MSG_PREFIX = "Audit event got: ";
 
     @Override
-    public void fireEvent(TradingEvent tradingEvent) {
+    public void fireEvent(TradingAuditEvent tradingEvent) {
         log.info(MSG_PREFIX + tradingEvent.toString());
     }
 }
