@@ -8,8 +8,6 @@ plugins {
 
 group = 'com.github.barbitoff.trading.traderacoon'
 version = '0.0.1'
-sourceCompatibility = '11'
-targetCompatibility = '11'
 
 ext['okhttp3.version'] = '4.3.1'
 
@@ -59,6 +57,8 @@ dependencyManagement {
 }
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
     withJavadocJar()
     withSourcesJar()
 }
